@@ -1,7 +1,7 @@
 Add-Type -AssemblyName PresentationFramework
 
-$global:fqdn = "FQDN"
-$global:token = 'API_Key' 
+$global:fqdn
+$global:token
 $global:response = " "
 
 $code = @"
@@ -386,10 +386,48 @@ Function Remove-AccountFromGroup {
 #Create-User
 #Delete-User
 #Remove-Group
+#Finds XAML File
+$xamlFile = "C:\git\Powershell\LE_UserManagement\LE_UserManagement\MainWindow.xaml"
 
+#create window
+$inputXML = Get-Content $xamlFile -Raw
+$inputXML = $inputXML -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '<Win.*', '<Window'
+[XML]$XAML = $inputXML
+
+#Read XAML
+$reader = (New-Object System.Xml.XmlNodeReader $XAML)
+try {
+    $window = [Windows.Markup.XamlReader]::Load($reader)
+} catch {
+    Write-Warning $_.Exception
+    throw
+}
+
+#Create variables based on form control names.
+#Variable will be named as 'var_<control name>'
+$XAML.SelectNodes("//*[@Name]") | ForEach-Object {
+    try {
+        Set-Variable -Name "var_$($_.Name)" -Value $window.Findname($_.Name) -ErrorAction Stop
+    } catch {
+        throw
+    }
+}
+
+Get-Variable var_*
+
+$global:fqdn = $var_FQDN
+$global:token = $var_APIKey
+
+$var_Authenticate.Add_Click( {
+    if($result = Get-LeAccounts) {
+        foreach($item in $result) {
+            
+        }
+    }
+})
 
 #Time to do stuff
-do {
+<#do {
     $accounts = Get-LeAccounts
     $selectDomain = $accounts.domain | Sort-Object -Unique
     $accountGroup = Get-LeAccountGroups | Select-Object -Property groupId, name, memberCount
@@ -411,4 +449,6 @@ do {
     Pause
     
  }
- until ($selection -eq 'q')
+ until ($selection -eq 'q')#>
+
+ $Null = $window.ShowDialog()
