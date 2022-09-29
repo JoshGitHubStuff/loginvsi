@@ -1,7 +1,7 @@
-﻿$global:fqdn = "login-ent.login.lab"
-$global:token = '0NgH5yCnF0am48E-x6dF-o4R660sLqjuNE95ZXdfpTA' 
+﻿$global:fqdn = ""
+$global:token = '' 
 $global:response = " "
-$global:testid = '03b2f1b9-2b6d-4230-aa4b-9bf1f4dc2c57'
+$global:testid = ''
 
 $code = @"
 public class SSLHandler
